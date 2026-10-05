@@ -1,0 +1,32 @@
+resources:
+  apps:
+    policypilot_app:
+      name: policypilot-${bundle.target}
+      description: "PolicyPilot: cited answers from SEC 10-K filings"
+      source_code_path: ..
+      config:
+        command: ["streamlit", "run", "streamlit_app.py", "--server.headless=true"]
+        env:
+          - name: PP_ENV
+            value: databricks
+          - name: PP_LLM_ENDPOINT
+            value_from: llm-endpoint
+          - name: PP_CATALOG
+            value: ${var.catalog}
+          - name: PP_SCHEMA
+            value: ${var.schema}
+          - name: PP_VS_ENDPOINT
+            value: ${var.vs_endpoint}
+          - name: TOKENIZERS_PARALLELISM
+            value: "false"
+      # Granted to the app's auto-created service principal on deploy.
+      resources:
+        - name: llm-endpoint
+          serving_endpoint:
+            name: ${var.llm_endpoint}
+            permission: CAN_QUERY
+        - name: chunks-index
+          uc_securable:
+            securable_full_name: ${var.catalog}.${var.schema}.chunks_index
+            securable_type: TABLE
+            permission: SELECT

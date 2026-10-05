@@ -1,0 +1,5 @@
+# Installed by notebooks/seed_chunks_table.py
+sentence-transformers>=3.0
+beautifulsoup4>=4.12
+requests>=2.31
+databricks-sdk>=0.50

@@ -1,0 +1,56 @@
+name: cd
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md"]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Bundle target
+        type: choice
+        options: [dev, prod]
+        default: dev
+
+permissions:
+  contents: read
+  id-token: write   # GitHub OIDC -> Entra ID federated credential
+
+concurrency:
+  group: cd-${{ inputs.target || 'dev' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target || 'dev' }}
+    env:
+      TARGET: ${{ inputs.target || 'dev' }}
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_AUTH_TYPE: azure-cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (federated, no stored tokens)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - uses: databricks/setup-cli@main
+
+      - run: databricks bundle validate -t "$TARGET"
+      - run: databricks bundle deploy -t "$TARGET"
+      - name: Deploy and start the app
+        run: databricks bundle run policypilot_app -t "$TARGET"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Grant the app's service principal UC and Vector Search access
+        run: |
+          pip install "databricks-sdk>=0.50"
+          python scripts/grant_app_permissions.py \
+            --app "policypilot-$TARGET" \
+            --catalog "${{ vars.PP_CATALOG || 'policypilot_dev' }}"

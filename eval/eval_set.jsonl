@@ -1,0 +1,14 @@
+{"inputs": {"question": "What supply chain risks does Apple disclose?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "How does Microsoft describe competition in its cloud business?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "What does NVIDIA say about export controls affecting its products?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "What are Tesla's key risks related to its CEO?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "What cybersecurity risks does JPMorgan Chase describe?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "How does Pfizer describe patent expiration risk for its products?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "What reportable segments does Walmart describe?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "What climate-related risks does Exxon Mobil disclose?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "How does Netflix describe risks from content costs?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "What regulatory risks does Meta disclose about data privacy?"}, "expectations": {"should_refuse": false}}
+{"inputs": {"question": "Should I buy Apple stock this year?"}, "expectations": {"should_refuse": true}}
+{"inputs": {"question": "What is Tesla's price target for next quarter?"}, "expectations": {"should_refuse": true}}
+{"inputs": {"question": "What's a good recipe for banana bread?"}, "expectations": {"should_refuse": true}}
+{"inputs": {"question": "What does Apple's 10-K say about its plans to open restaurants on Mars?"}, "expectations": {"should_refuse": true}}

@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write   # Azure OIDC for agent-eval
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install lightweight test deps (no torch needed)
+        run: pip install ruff pytest "langgraph>=0.4" numpy beautifulsoup4 requests
+      - run: ruff check .
+      - run: pytest -q
+
+  agent-eval:
+    # Signals quality on every merge to main; it does not block cd.yml.
+    needs: lint-and-test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_AUTH_TYPE: azure-cli
+      PP_ENV: databricks
+      PP_CATALOG: ${{ vars.PP_CATALOG || 'policypilot_dev' }}
+      MLFLOW_EXPERIMENT_NAME: /Shared/policypilot-eval
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Azure login (OIDC, no stored secrets)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - run: pip install -r requirements-dev.txt
+      - run: python eval/run_eval.py

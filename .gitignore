@@ -1,0 +1,39 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.databricks/
+mlruns/
+data/*.jsonl
+
+# Secrets: never commit these
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Local data (rebuild with scripts/build_local_index.py)
+data/*.jsonl
+
+# Databricks and MLflow
+.databricks/
+mlruns/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

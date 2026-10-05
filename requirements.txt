@@ -1,0 +1,9 @@
+# Runtime dependencies for the Databricks App (installed by Databricks Apps at deploy time).
+--extra-index-url https://download.pytorch.org/whl/cpu
+streamlit>=1.40
+langgraph>=0.4
+databricks-sdk>=0.50
+openai>=1.60
+sentence-transformers>=3.0
+torch
+numpy

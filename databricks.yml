@@ -1,0 +1,42 @@
+# PolicyPilot Declarative Automation (Asset) Bundle.
+# Deploy:  databricks bundle validate -t dev && databricks bundle deploy -t dev && databricks bundle run policypilot_app -t dev
+bundle:
+  name: policypilot
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog that holds the filings schema
+    default: policypilot_dev
+  schema:
+    default: filings
+  vs_endpoint:
+    default: policypilot-vs-endpoint
+  llm_endpoint:
+    description: Unity AI Gateway external-model endpoint in front of Groq
+    default: policypilot-groq-gateway
+  sec_user_agent:
+    description: 'SEC EDGAR requires "Name email" as the User-Agent'
+    default: "PolicyPilot admin@example.com"
+
+sync:
+  exclude:
+    - ".venv/**"
+    - "data/*.jsonl"
+    - ".pytest_cache/**"
+
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://adb-0000000000000000.0.azuredatabricks.net   # replace with your dev workspace URL
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+
+  prod:
+    workspace:
+      host: https://adb-0000000000000000.0.azuredatabricks.net   # replace with your prod workspace URL
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: policypilot_prod
